@@ -940,7 +940,9 @@
         if(typeof (apiInfo.parameters)!='undefined'&&apiInfo.parameters!=null){
             var ptd=$("<td></td>");
             var ptable=$('<table class="table table-bordered" id="requestModelTable"></table>')
-            var phead=$('<thead><th>参数名称</th><th>说明</th><th>类型</th><th>in</th><th>是否必须</th></thead>');
+            //var phead=$('<thead><th>参数名称</th><th>说明</th><th>类型</th><th>in</th><th>是否必须</th></thead>');
+            //增加列子显示列
+            var phead=$('<thead><th>参数名称</th><th>说明</th><th>类型</th><th>in</th><th>是否必须</th><th>例子</th></thead>');
             ptable.append(phead);
             var pbody=$('<tbody></tbody>');
             var requestArrs=new Array();
@@ -970,7 +972,19 @@
                 }
                 var ptr=null;
                 //列出属性
-                var pobject={id:generUUID(),field:param.name,description:DApiUI.getStringValue(param['description']),type:ptype,in:DApiUI.getStringValue(param['in']),required:param['required'],pid:""};
+                //var pobject={id:generUUID(),field:param.name,description:DApiUI.getStringValue(param['description']),type:ptype,in:DApiUI.getStringValue(param['in']),required:param['required'],pid:""};
+                //增加列子显示列
+                function getRequestBodyRequiredInProp(definition){//根据属性中是否存在必填属性判断模型是否必填
+                    var required = false;
+                    $.each(definition.properties,function(){
+                        if(this.required){//判断当前body中属性是否存在必填选项
+                            required = true;
+                            return false;
+                        }
+                    })
+                    return required;
+                }
+                var pobject={id:generUUID(),field:param.name,description:DApiUI.getStringValue(param['description']),type:ptype,in:DApiUI.getStringValue(param['in']),required:getRequestBodyRequiredInProp(DApiUI.getMenuConstructs()[ptype]),example:"",pid:""};
                 requestArrs.push(pobject);
                 /*if (refflag){
                     ptr=$('<tr><td>'+param.name+'</td><td style="text-align: center;">'+DApiUI.getStringValue(param['description'])+'</td><td>'+ptype+'</td><td>'+DApiUI.getStringValue(param['in'])+'</td><td>'+param['required']+'</td></tr>');
@@ -1007,7 +1021,9 @@
                             for(var prop in props){
                                 var pvalue=props[prop];
                                 var type=DApiUI.toString(pvalue.type,"string");
-                                var cobj={id:generUUID(),field:prop,description:DApiUI.toString(pvalue.description,""),type:type,in:DApiUI.getStringValue(param['in']),required:param['required'],pid:pobject.id};
+                                //var cobj={id:generUUID(),field:prop,description:DApiUI.toString(pvalue.description,""),type:type,in:DApiUI.getStringValue(param['in']),required:param['required'],pid:pobject.id};
+                                //增加列子显示列
+                                var cobj={id:generUUID(),field:prop,description:DApiUI.toString(pvalue.description,""),type:type,in:DApiUI.getStringValue(param['in']),required:pvalue['required'],example:DApiUI.toString(pvalue['example'],""),pid:pobject.id};
                                 requestArrs.push(cobj);
                             }
                         }
@@ -1023,7 +1039,9 @@
                         treeClassPId="treegrid-parent-"+arrInfo.pid;
                     }
                     var tr=$("<tr class='"+treeClassId+" "+treeClassPId+"'></tr>");
-                    tr.append("<td>"+arrInfo.field+"</td><td>"+arrInfo.description+"</td><td>"+arrInfo.type+"</td><td>"+arrInfo.in+"</td><td>"+arrInfo.required+"</td>");
+                    //tr.append("<td>"+arrInfo.field+"</td><td>"+arrInfo.description+"</td><td>"+arrInfo.type+"</td><td>"+arrInfo.in+"</td><td>"+arrInfo.required+"</td>");
+                    //增加列子显示列
+                    tr.append("<td>"+arrInfo.field+"</td><td>"+arrInfo.description+"</td><td>"+arrInfo.type+"</td><td>"+arrInfo.in+"</td><td>"+arrInfo.required+"</td><td>"+arrInfo.example+"</td>");
                     pbody.append(tr);
                 }
             }else{
